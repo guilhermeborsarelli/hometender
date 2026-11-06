@@ -1,7 +1,9 @@
 import {DRINKS, DRINK_BY_ID, INGREDIENTS, GROUPS, GLASSES, TOOLS, BASICS, BASE_LABEL} from './data.js';
-import {analyzeBar, toolsFor, stepsFor, amount, ingredientName, parentOf, childrenOf, searchDrinks, normalize, missingFor, requiredIds} from './engine.js';
+import {analyzeBar, toolsFor, stepsFor, amount, ingredientName, parentOf, childrenOf, searchDrinks, normalize, missingFor} from './engine.js';
 import {toolSVG, glassSVG, ornament, cornerFlourish} from './art.js';
 import {createAuth} from './auth.js';
+import {createProfileStore, ProfileError} from './profile.js';
+import {amazonLinkFor} from './affiliate-links.js';
 import {introHTML, creditsHTML} from './content.js';
 import {storyFor, glassWhyFor, nameFor} from './stories/index.js';
 import {LANGS, detectLang, setLang, getLang, t, tm, trIngredient, trGroup, trPhrase, trBase, trGlass, trTool, catLabel, catShort} from './i18n.js';
@@ -22,19 +24,32 @@ const store = {
 
 const auth = createAuth();
 const IBA_CATS = ['unforgettable', 'contemporary', 'newera'];
-const state = {user: null, bar: new Set(), cat: 'all', base: 'all', q: '', barQ: '', lastList: 'classicos', openGroups: new Set(['Destilados']), fav: new Set(), done: new Set(), servings: 1, myTab: 'fav'};
+const state = {user: null, bar: new Set(), bars: [], activeBarId: null, cart: new Set(), cat: 'all', base: 'all', q: '', barQ: '', lastList: 'classicos', openGroups: new Set(['Destilados']), fav: new Set(), done: new Set(), servings: 1, myTab: 'fav'};
 const wide = () => globalThis.matchMedia?.('(min-width: 960px)').matches;
 // Altura real da barra superior, para os filtros fixos logo abaixo dela no celular.
 const topbarEl = document.querySelector('.topbar');
 if (topbarEl && globalThis.ResizeObserver) new ResizeObserver(() => document.documentElement.style.setProperty('--top-h', `${topbarEl.offsetHeight}px`)).observe(topbarEl);
 setLang(detectLang(store.get('hometender.lang', null)));
 
-const barKey = () => `hometender.bar.${state.user?.email || 'convidado'}`;
-function loadBar() {
-  const saved = store.get(barKey(), null) ?? store.get('barnoir.bar', []);
-  state.bar = new Set(saved.filter(id => INGREDIENTS[id]));
+let profileStore = null;
+function syncProfile(profile) {
+  state.bars = profile.bars; state.activeBarId = profile.activeBarId;
+  state.bar = new Set(profile.bars.find(bar => bar.id === profile.activeBarId).ingredients);
+  state.cart = new Set(profile.cart);
 }
-const saveBar = () => store.set(barKey(), [...state.bar]);
+function loadBar() {
+  profileStore = createProfileStore(localStorage, state.user.email, t('defaultBarName'));
+  syncProfile(profileStore.read());
+}
+function updateProfile(action, onError = message => toast(message)) {
+  try { syncProfile(action()); updateUserMenu(); return true; }
+  catch (error) {
+    syncProfile(profileStore.read());
+    onError(error instanceof ProfileError ? t(error.code) || t('profileSaveError') : t('profileSaveError'));
+    return false;
+  }
+}
+const saveBar = () => updateProfile(() => profileStore.setIngredients([...state.bar]));
 // Favoritos e "Já fiz", por usuário
 const listKey = kind => `hometender.${kind}.${state.user?.email || 'convidado'}`;
 function loadLists() { for (const k of ['fav', 'done']) state[k] = new Set(store.get(listKey(k), []).filter(id => DRINK_BY_ID[id])); }
@@ -286,6 +301,47 @@ const PRESETS = {
   presetWhiskey: ['bourbon', 'scotch', 'vermute_tinto', 'angostura', 'acucar', 'siciliano', 'mel', 'cereja', 'soda']
 };
 
+function barProfilesHTML() {
+  return `<section class="bar-profiles" aria-labelledby="bar-profiles-h">
+    <div><p class="kicker">${esc(t('yourSpaces'))}</p><h2 id="bar-profiles-h">${esc(t('chooseBar'))}</h2><p class="bar-profile-note">${esc(t('barsSavedNote'))}</p></div>
+    <div class="bar-profile-controls">
+      <label class="bar-profile-select"><span>${esc(t('activeBar'))}</span><select id="bar-select">${state.bars.map(bar => `<option value="${esc(bar.id)}" ${bar.id === state.activeBarId ? 'selected' : ''}>${esc(bar.name)}</option>`).join('')}</select></label>
+      <button type="button" class="bar-create" id="bar-create">+ ${esc(t('newBar'))}</button>
+      <div class="bar-profile-actions"><button type="button" id="bar-rename">${esc(t('renameBar'))}</button><button type="button" id="bar-delete" ${state.bars.length === 1 ? 'disabled' : ''}>${esc(t('deleteBar'))}</button></div>
+    </div>
+  </section>`;
+}
+
+function editBar(mode) {
+  const active = state.bars.find(bar => bar.id === state.activeBarId);
+  const deleting = mode === 'delete';
+  const dialog = document.createElement('dialog');
+  dialog.className = 'bar-dialog'; dialog.setAttribute('aria-labelledby', 'bar-dialog-title');
+  dialog.innerHTML = `<form class="bar-dialog-form">
+    <h2 id="bar-dialog-title">${esc(t(deleting ? 'deleteBar' : mode === 'rename' ? 'renameBar' : 'newBar'))}</h2>
+    <p>${esc(deleting ? t('deleteBarMessage', active.name) : t('barNameHint'))}</p>
+    ${deleting ? '' : `<label>${esc(t('barName'))}<input name="barName" maxlength="60" required autocomplete="off" value="${mode === 'rename' ? esc(active.name) : ''}" placeholder="${esc(t('barNamePlaceholder'))}"></label>`}
+    <p class="bar-dialog-error" id="bar-dialog-error" role="alert" hidden></p>
+    <div class="bar-dialog-actions"><button type="button" data-dialog-cancel>${esc(t('cancel'))}</button><button type="submit" class="${deleting ? 'danger' : 'primary'}">${esc(t(deleting ? 'deleteBar' : mode === 'rename' ? 'save' : 'createBar'))}</button></div>
+  </form>`;
+  document.body.append(dialog);
+  dialog.addEventListener('close', () => dialog.remove(), {once: true});
+  dialog.querySelector('[data-dialog-cancel]').addEventListener('click', () => dialog.close());
+  dialog.querySelector('form').addEventListener('submit', event => {
+    event.preventDefault();
+    const name = dialog.querySelector('input')?.value;
+    const action = deleting ? () => profileStore.deleteBar(active.id) : mode === 'rename' ? () => profileStore.renameBar(active.id, name) : () => profileStore.createBar(name);
+    if (!updateProfile(action, message => {
+      const error = dialog.querySelector('#bar-dialog-error'); error.textContent = message; error.hidden = false;
+    })) return;
+    dialog.close(); state.barQ = ''; state.openGroups = new Set(['Destilados']); renderBar();
+    view.querySelector('#bar-select').focus();
+    toast(t(deleting ? 'barDeleted' : mode === 'rename' ? 'barRenamed' : 'barCreated'));
+  });
+  dialog.showModal();
+  if (!deleting) { const input = dialog.querySelector('input'); input.focus(); input.select(); }
+}
+
 function renderBar() {
   const q = normalize(state.barQ);
   const groups = GROUPS.map(gp => {
@@ -296,6 +352,7 @@ function renderBar() {
     return `<details class="ing-group" data-group="${esc(gp)}" ${open ? 'open' : ''}><summary><span class="grp-name">${esc(trGroup(gp))}</span><span class="grp-count" ${n ? '' : 'hidden'}>${n}</span></summary><div class="ing-chips">${ids.map(([id]) => `<button type="button" class="ing ${state.bar.has(id) ? 'on' : ''}" data-ing="${id}" aria-pressed="${state.bar.has(id)}">${esc(ingName(id))}</button>`).join('')}</div></details>`;
   }).join('');
   view.innerHTML = `${pageHead(t('barKicker'), t('barTitle'), t('barLede'))}
+    ${barProfilesHTML()}
     <section class="my-drinks" id="my-drinks">${myDrinksHTML()}</section>
     <div class="bar-layout">
       <section class="panel bar-picker" aria-labelledby="bar-h">
@@ -315,8 +372,9 @@ function renderBar() {
     const b = e.target.closest('[data-ing]'); if (!b) return;
     const id = b.dataset.ing;
     state.bar.has(id) ? state.bar.delete(id) : state.bar.add(id);
+    if (!saveBar()) { renderBar(); return; }
     b.classList.toggle('on'); b.setAttribute('aria-pressed', state.bar.has(id));
-    saveBar(); renderResults();
+    renderResults();
     const grp = b.closest('.ing-group'), cnt = grp?.querySelector('.grp-count');
     if (cnt) { const n = grp.querySelectorAll('.ing.on').length; cnt.textContent = n; cnt.hidden = !n; }
     view.querySelector('#clear').disabled = !state.bar.size;
@@ -330,14 +388,35 @@ function renderBar() {
   view.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => { PRESETS[b.dataset.preset].forEach(id => state.bar.add(id)); saveBar(); renderBar(); }));
   view.querySelector('#clear').addEventListener('click', () => { state.bar.clear(); saveBar(); renderBar(); });
   view.querySelector('#fab').addEventListener('click', e => { e.preventDefault(); view.querySelector('#results').scrollIntoView({behavior: 'smooth'}); });
+  view.querySelector('#bar-select').addEventListener('change', event => {
+    if (updateProfile(() => profileStore.selectBar(event.target.value))) { state.barQ = ''; state.openGroups = new Set(['Destilados']); }
+    renderBar(); view.querySelector('#bar-select').focus();
+  });
+  view.querySelector('#bar-create').addEventListener('click', () => editBar('create'));
+  view.querySelector('#bar-rename').addEventListener('click', () => editBar('rename'));
+  view.querySelector('#bar-delete').addEventListener('click', () => editBar('delete'));
   renderResults();
 }
 
-function resultRow(row, near = false) {
+function resultLink(row) {
   const d = row.drink; const parent = parentOf(d);
-  const tag = near ? `<span class="tag miss">${esc(t('missing'))}: ${esc(row.missing.map(ingName).join(', '))}</span>`
-    : d.cat === 'adaptation' ? `<span class="tag riff">${esc(t('riffOf', parent ? dName(parent) : ''))}</span>` : `<span class="tag iba">${esc(catShort(d.cat))}</span>`;
-  return `<li><a class="result" href="#/drink/${d.id}"><img src="${img(d.id)}" alt="" loading="lazy"><span class="result-body"><span class="result-name">${esc(dName(d))}</span>${tag}</span></a></li>`;
+  const tag = d.cat === 'adaptation' ? `<span class="tag riff">${esc(t('riffOf', parent ? dName(parent) : ''))}</span>` : `<span class="tag iba">${esc(catShort(d.cat))}</span>`;
+  return `<a class="result" href="#/drink/${d.id}"><img src="${img(d.id)}" alt="" loading="lazy"><span class="result-body"><span class="result-name">${esc(dName(d))}</span>${tag}</span></a>`;
+}
+const resultRow = row => `<li>${resultLink(row)}</li>`;
+function cartButtonContent(id) { return `${state.cart.has(id) ? CHECK : CART}<span>${esc(t(state.cart.has(id) ? 'inCart' : 'addToCart'))}</span>`; }
+function nearRow(row) {
+  return `<li class="near-result" data-near-drink="${row.drink.id}">${resultLink(row)}<ul class="missing-products">${row.missing.map(id => `<li>
+    <span class="missing-product-name">${esc(t('missing'))}: <strong>${esc(ingName(id))}</strong></span>
+    <button type="button" class="add-cart" data-add-cart="${id}" ${state.cart.has(id) ? 'disabled' : ''} aria-label="${esc(`${t(state.cart.has(id) ? 'inCart' : 'addToCart')}: ${ingName(id)}`)}">${cartButtonContent(id)}</button>
+  </li>`).join('')}</ul></li>`;
+}
+function refreshCartButtons() {
+  view.querySelectorAll('[data-add-cart]').forEach(button => {
+    const id = button.dataset.addCart;
+    button.disabled = state.cart.has(id); button.innerHTML = cartButtonContent(id);
+    button.setAttribute('aria-label', `${t(state.cart.has(id) ? 'inCart' : 'addToCart')}: ${ingName(id)}`);
+  });
 }
 
 function renderResults() {
@@ -365,28 +444,14 @@ function renderResults() {
   } else html += `<article class="panel"><p class="verdict">${esc(t('pickNone'))}</p></article>`;
   if (r.classics.length) html += `<h3 class="res-h">${esc(t('possibleClassics'))} <span>${r.classics.length}</span></h3><ul class="results">${r.classics.map(x => resultRow(x)).join('')}</ul>`;
   if (r.adaptations.length) html += `<h3 class="res-h">${esc(t('possibleRiffs'))} <span>${r.adaptations.length}</span></h3><ul class="results">${r.adaptations.map(x => resultRow(x)).join('')}</ul>`;
-  const buys = nextBuys();
-  if (buys.length) html += `<section class="next-buy"><h3 class="res-h">${esc(t('nextBuy'))}</h3><p class="next-buy-lede">${esc(t('nextBuyLede'))}</p><ul>${buys.map(b => `<li>
-      <div class="nb-body"><strong>${esc(ingName(b.id))}</strong><span class="nb-gain">${esc(t('unlocks', b.drinks.length, b.classics))}</span>
-      <span class="nb-list">${b.drinks.slice(0, 4).map(d => `<a href="#/drink/${d.id}">${esc(dName(d))}</a>`).join(' · ')}${b.drinks.length > 4 ? ' …' : ''}</span></div>
-      <button type="button" class="chip ghost" data-have="${b.id}">+ ${esc(t('iHave'))}</button></li>`).join('')}</ul></section>`;
-  if (r.near.length) html += `<h3 class="res-h">${esc(t('almost'))} <span>${r.near.length}</span></h3><ul class="results">${r.near.map(x => resultRow(x, true)).join('')}</ul>`;
+  if (r.near.length) html += `<h3 class="res-h">${esc(t('almost'))} <span>${r.near.length}</span></h3><ul class="results near-results">${r.near.map(nearRow).join('')}</ul>`;
   box.innerHTML = html;
-  box.querySelectorAll('[data-have]').forEach(b => b.addEventListener('click', () => { state.bar.add(b.dataset.have); saveBar(); toast(t('addedToBar', ingName(b.dataset.have))); renderBar(); }));
-}
-
-/** Ingredientes que, comprados, completam mais receitas com o que já há no bar. */
-function nextBuys(limit = 5) {
-  const gain = new Map();
-  for (const d of DRINKS) {
-    const miss = missingFor(d, state.bar);
-    if (miss.length !== 1 || !requiredIds(d).some(id => state.bar.has(id))) continue;
-    const id = miss[0];
-    if (!gain.has(id)) gain.set(id, []);
-    gain.get(id).push(d);
-  }
-  return [...gain].map(([id, drinks]) => ({id, drinks: drinks.sort((a, b) => (a.cat === 'adaptation') - (b.cat === 'adaptation') || dName(a).localeCompare(dName(b))), classics: drinks.filter(d => d.cat !== 'adaptation').length}))
-    .sort((a, b) => b.drinks.length - a.drinks.length || b.classics - a.classics).slice(0, limit);
+  box.onclick = event => {
+    const button = event.target.closest('[data-add-cart]');
+    if (!button || button.disabled) return;
+    const id = button.dataset.addCart;
+    if (updateProfile(() => profileStore.addToCart(id))) { refreshCartButtons(); toast(t('addedToCart', ingName(id))); }
+  };
 }
 
 /** "Meus drinks": favoritos e já feitos. */
@@ -407,8 +472,25 @@ function renderSavedDrinks(kind) {
 }
 
 function renderCart() {
-  view.innerHTML = `${pageHead(t('userMenu'), t('cart'), t('cartLede'))}
-    <section class="cart-placeholder">${CART}<h2>${esc(t('comingSoon'))}</h2><p>${esc(t('cartMessage'))}</p><a class="btn" href="#/classicos">${esc(t('exploreDrinks'))}</a></section>`;
+  const items = [...state.cart];
+  const links = new Map(items.map(id => [id, amazonLinkFor(id)]));
+  view.innerHTML = pageHead(t('userMenu'), t('cart'), t('cartLede')) + (items.length
+    ? `<section class="shopping-cart" aria-label="${esc(t('cart'))}">
+      <div class="cart-toolbar"><p>${esc(t('cartCount', items.length))}</p><button type="button" id="cart-clear">${esc(t('clearCart'))}</button></div>
+      <ul class="cart-products">${items.map(id => `<li data-cart-product="${id}"><div class="cart-product-name"><strong>${esc(ingName(id))}</strong><span>${esc(trGroup(INGREDIENTS[id].group))}</span></div>
+        <div class="cart-product-actions">${links.get(id) ? `<a class="amazon-link" href="${esc(links.get(id))}" target="_blank" rel="sponsored noopener noreferrer">${esc(t('viewOnAmazon'))} ↗</a>` : `<span class="cart-link-pending">${esc(t('amazonLinkSoon'))}</span>`}
+        <button type="button" class="cart-remove" data-remove-cart="${id}" aria-label="${esc(t('removeCartItem', ingName(id)))}">${esc(t('remove'))}</button></div></li>`).join('')}</ul>
+      <p class="cart-note">${esc(t('cartSavedNote'))}</p><p class="cart-note">${esc(t([...links.values()].some(Boolean) ? 'amazonCheckoutNote' : 'amazonSoon'))}</p>
+      ${[...links.values()].some(Boolean) ? `<p class="cart-disclosure">${esc(t('affiliateDisclosure'))}</p>` : ''}
+      <a class="cart-back" href="#/bar">← ${esc(t('backToBar'))}</a>
+    </section>`
+    : `<section class="cart-empty">${CART}<h2>${esc(t('cartEmpty'))}</h2><p>${esc(t('cartEmptyMessage'))}</p><a class="btn" href="#/bar">${esc(t('backToBar'))}</a></section>`);
+  view.querySelectorAll('[data-remove-cart]').forEach(button => button.addEventListener('click', () => {
+    if (updateProfile(() => profileStore.removeFromCart(button.dataset.removeCart))) { renderCart(); view.focus(); }
+  }));
+  view.querySelector('#cart-clear')?.addEventListener('click', () => {
+    if (updateProfile(() => profileStore.clearCart())) { renderCart(); view.focus(); toast(t('cartCleared')); }
+  });
 }
 
 // Menu expansível com links nativos: teclado, toque e mouse.
@@ -497,7 +579,7 @@ devEnter.addEventListener('click', () => {
 
 document.getElementById('logout').addEventListener('click', () => {
   try { localStorage.removeItem(GUEST_KEY); } catch { /* modo privado */ }
-  auth.logout(); state.user = null; rendered = null; state.bar = new Set();
+  auth.logout(); state.user = null; rendered = null; state.bar = new Set(); state.bars = []; state.cart = new Set(); profileStore = null;
   location.hash = '#/inicio'; showCover();
 });
 
