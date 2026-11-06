@@ -79,8 +79,19 @@
       </nav>
       <div class="topbar-right">
         <div class="lang-switch" data-lang-switch></div>
-        <span class="user-name" id="user-name"></span>
-        <button type="button" class="logout" id="logout" data-i18n="logout"></button>
+        <div class="user-account" id="user-account">
+          <button type="button" class="user-toggle" id="user-menu-toggle" aria-expanded="false" aria-controls="user-menu">
+            <span class="user-name" id="user-name"></span>
+            <svg class="user-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+          </button>
+          <nav class="user-menu" id="user-menu" hidden>
+            <p class="user-menu-heading" data-i18n="userMenu"></p>
+            <a href="#/favoritos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.8-7.5 10.2-7.5 10.2z"/></svg><span data-i18n="favorites"></span><span class="user-menu-count" data-user-count="fav">0</span></a>
+            <a href="#/feitos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.2 4.2L19 7"/></svg><span data-i18n="madeDrinks"></span><span class="user-menu-count" data-user-count="done">0</span></a>
+            <a href="#/carrinho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l3 12h11l2-8H6M10 20h.01M18 20h.01"/></svg><span data-i18n="cart"></span><span class="user-menu-soon" data-i18n="comingSoon"></span></a>
+            <button type="button" class="user-menu-logout" id="logout"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v16h5m5-12 4 4-4 4M8 12h12"/></svg><span data-i18n="logout"></span></button>
+          </nav>
+        </div>
       </div>
     </header>
 

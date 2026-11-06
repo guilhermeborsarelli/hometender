@@ -29,11 +29,14 @@ Para ativar a primeira vez: Settings → Pages → Source: **GitHub Actions**.
 
 ## Fotos dos drinks
 
-`app/img/drinks/<id>.webp` são renderizações 3D próprias: estúdio com fundo preto, bancada espelhada, spot de cima e halo atrás do copo. Para regenerar depois de mudar receitas ou cores:
+`app/img/drinks/<id>.webp` traz imagens fotorrealistas dos drinks, geradas com IA em estilo de fotografia de produto: fundo preto, bancada espelhada, vidro, gelo e guarnição. A origem das novas imagens fica em `app/img/drinks/sources.json`; `photos.json` protege as imagens aprovadas contra substituição pelo render geométrico.
+
+O estúdio 3D original continua disponível para criar imagens provisórias de novos drinks:
 
 ```sh
-npm run render:drinks            # todos
-npm run render:drinks -- negroni # só alguns
+npm run render:drinks            # drinks sem imagem aprovada
+npm run render:drinks -- negroni # um drink, se ainda não tiver imagem aprovada
+npm run render:drinks -- --force negroni # substitui uma imagem aprovada pelo render geométrico
 ```
 
 O script (`tools/render-drinks/`) monta a cena em Three.js e renderiza no Chromium headless. A cor do líquido vem de `color`/`color2` em `data.js`; copo, gelo, espuma e guarnições também vêm dos dados do drink.
@@ -60,9 +63,11 @@ Para um app pago é preciso um backend:
 | `content.js` | Introdução e créditos das fotos |
 | `auth.js` | Contas locais |
 | `art.js` | Ícones dos utensílios |
-| `img/` | Fotos de abertura (Wikimedia Commons, créditos no app) e renders 3D dos drinks |
+| `img/` | Fotos de abertura (Wikimedia Commons, créditos no app) e imagens fotorrealistas dos drinks |
 
-Testes: `tests/drinks.test.js` (rodam com `npm test`).
+Testes de dados: `tests/drinks.test.js` (rodam com `npm test`).
+
+Testes de navegador do menu e das coleções: `npm run test:ui`. Usam Playwright com Chromium; defina `CHROMIUM_PATH` se necessário. Na nuvem, o Chromium do sistema em `/usr/bin/chromium` é detectado automaticamente. Em outra máquina, instale o Chromium do Playwright com `npx playwright install chromium`.
 
 Histórico: o projeto nasceu dentro do repositório `fintrack` (pasta `public/drinks/`) e foi separado em um repositório próprio.
 
@@ -87,6 +92,7 @@ Histórico: o projeto nasceu dentro do repositório `fintrack` (pasta `public/dr
 
 - Favoritos e "Já fiz" ficam por usuário em `hometender.fav.<email>` e `hometender.done.<email>`; aparecem em "Meus drinks", no topo do Meu Bar.
   Concluir todos os passos da receita marca "Já fiz" sozinho.
+- O nome do usuário na barra superior abre um submenu com contadores e páginas próprias para Favoritos e Drinks feitos, além do Carrinho de compras ("Em breve", sem pedidos ou pagamentos). O menu funciona no celular, fecha com Escape ou ao clicar fora e mantém a opção Sair.
 - A folha da receita tem o seletor 1 / 2 / 4 / 6 drinks: multiplica as medidas em ml e a medida caseira; doses em texto ganham "× n".
 - "Próxima compra" (Meu Bar): os ingredientes que, comprados, completam mais receitas com o que a pessoa já tem.
 

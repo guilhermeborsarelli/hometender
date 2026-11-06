@@ -264,5 +264,5 @@ export function introHTML({name, counts, showcase = [], labels}) {
 }
 
 export function creditsHTML() {
-  return `<details class="credits"><summary>${T().credits}</summary><ul>${Object.values(PHOTOS).map(p => `<li>${esc(pick(p.alt))}: ${esc(p.author)}, <a href="${p.url}" target="_blank" rel="noopener">${esc(p.license)}</a>, Wikimedia Commons.</li>`).join('')}<li>${{pt: 'Fotos dos drinks: renderizações 3D próprias do Home Tender.', en: 'Drink photos: Home Tender’s own 3D renders.', es: 'Fotos de los cócteles: renders 3D propios de Home Tender.'}[getLang()]}</li></ul></details>`;
+  return `<details class="credits"><summary>${T().credits}</summary><ul>${Object.values(PHOTOS).map(p => `<li>${esc(pick(p.alt))}: ${esc(p.author)}, <a href="${p.url}" target="_blank" rel="noopener">${esc(p.license)}</a>, Wikimedia Commons.</li>`).join('')}<li>${{pt: 'Imagens dos drinks: ilustrações fotorrealistas geradas com IA para o Home Tender.', en: 'Drink images: photorealistic AI-generated illustrations for Home Tender.', es: 'Imágenes de los cócteles: ilustraciones fotorrealistas generadas con IA para Home Tender.'}[getLang()]}</li></ul></details>`;
 }
