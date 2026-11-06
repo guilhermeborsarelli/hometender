@@ -124,7 +124,7 @@ test('lista oficial IBA completa: 102 coquetéis, 34 por categoria, todos com fi
 
 test('nome da marca não muda e o preparo traduzido sai sem resíduos', async () => {
   const html = readFileSync(new URL('../app/index.html', import.meta.url), 'utf8');
-  assert.match(html, /<h1 id="cover-title" class="brand-title">Home Tender<\/h1>/);
+  assert.match(html, /<h1 id="cover-title" class="brand-title">HOMETENDER<\/h1>/);
   assert.match(html, /<title>Home Tender<\/title>/);
   const {t} = await import('../app/i18n.js');
   for (const lang of ['pt', 'en', 'es']) {

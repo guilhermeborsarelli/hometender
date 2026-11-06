@@ -27,6 +27,18 @@ Para ativar a primeira vez: Settings → Pages → Source: **GitHub Actions**.
 
 `i18n.js` traz a interface e os dados traduzidos; `steps-i18n.js`, os passos de preparo. O seletor PT/EN/ES fica no canto superior direito e a escolha é salva no aparelho.
 
+## Marca e ícone do app
+
+O emblema HT com taça de coquetel usa dourado champanhe sobre preto e aparece na capa, na barra superior e no cabeçalho HOMETENDER da tela Início. Os ícones PNG do aplicativo, do iPhone e o favicon usam a mesma marca; a versão maskable mantém margem para os recortes do sistema.
+
+Arquivos para usar a marca fora do app, em `docs/brand/`:
+
+- `ht-icon-1024.png`: símbolo quadrado em alta resolução.
+- `logo-hometender.svg`: marca completa com símbolo e nome, em arquivo independente.
+- `logo-hometender.png`: marca completa em PNG, com fundo preto.
+
+O emblema foi criado com geração de imagem por IA. O SVG da marca completa mantém a tipografia como texto e inclui o emblema PNG incorporado.
+
 ## Fotos dos drinks
 
 `app/img/drinks/<id>.webp` traz imagens fotorrealistas dos drinks, geradas com IA em estilo de fotografia de produto: fundo preto, bancada espelhada, vidro, gelo e guarnição. A origem das novas imagens fica em `app/img/drinks/sources.json`; `photos.json` protege as imagens aprovadas contra substituição pelo render geométrico.
