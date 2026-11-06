@@ -102,7 +102,7 @@ Histórico: o projeto nasceu dentro do repositório `fintrack` (pasta `public/dr
 
 ## Favoritos, "Já fiz" e quantidade
 
-- Favoritos e "Já fiz" ficam por usuário em `hometender.fav.<email>` e `hometender.done.<email>`; aparecem em "Meus drinks", no topo do Meu Bar.
+- Favoritos e "Já fiz" ficam por usuário em `hometender.fav.<email>` e `hometender.done.<email>`; aparecem em "Meus drinks", no topo do Meu Bar. A seção começa recolhida e abre ao tocar no título.
   Concluir todos os passos da receita marca "Já fiz" sozinho.
 - O nome do usuário na barra superior abre um submenu com contadores e páginas próprias para Favoritos, Drinks feitos e Carrinho de compras. O menu funciona no celular, fecha com Escape ou ao clicar fora e mantém a opção Sair.
 - A folha da receita tem o seletor 1 / 2 / 4 / 6 drinks: multiplica as medidas em ml e a medida caseira; doses em texto ganham "× n".
@@ -110,6 +110,8 @@ Histórico: o projeto nasceu dentro do repositório `fintrack` (pasta `public/dr
 ## Bares por local e carrinho
 
 Na aba Meu Bar, cada pessoa pode criar espaços como Apartamento e Casa de campo, alternar entre eles, renomeá-los e excluir um bar com confirmação. Cada espaço tem sua lista de ingredientes; as sugestões e as indicações nas receitas usam apenas o bar selecionado. É mantido pelo menos um bar por perfil.
+
+Sua prateleira mantém a busca, o botão Limpar tudo e a seleção individual de ingredientes, sem os atalhos de preenchimento. Limpar tudo afeta apenas a prateleira do bar selecionado.
 
 Os bares, o bar selecionado e um carrinho único da conta são salvos em `hometender.profile.<email>` no `localStorage`. A lista anterior em `hometender.bar.<email>` é recuperada no primeiro bar, sem apagar o registro antigo. O legado sem dono `barnoir.bar` só é recuperado para o visitante. O login continua local: esses dados persistem neste aparelho, sem sincronização entre dispositivos.
 
