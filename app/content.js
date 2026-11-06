@@ -1,5 +1,5 @@
 // Home Tender — textos editoriais (introdução) e créditos das fotos, em três idiomas.
-import {getLang} from './i18n.js';
+import {getLang, t} from './i18n.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const pick = v => Array.isArray(v) ? v[{pt: 0, en: 1, es: 2}[getLang()] ?? 0] : v;
@@ -193,11 +193,16 @@ export function introHTML({name, counts, showcase = [], labels}) {
   const ids = ['sec-conceito', 'sec-historia', 'sec-biblioteca', 'sec-casa', 'sec-tecnica'];
   return `
   <article class="intro">
+    <header class="intro-brand" aria-label="Hometender">
+      <img class="intro-brand-emblem" src="img/brand/ht-emblem.png" alt="" aria-hidden="true" width="112" height="112">
+      <h1 class="intro-brand-title"><span>HOME</span><span>TENDER</span></h1>
+      <p class="intro-brand-tagline">${esc(t('eyebrow'))}</p>
+    </header>
     <header class="intro-hero">
       <img src="${PHOTOS.noite.src}" alt="" aria-hidden="true">
       <div class="intro-hero-text">
         <p class="eyebrow">${esc(x.hello(first))}</p>
-        <h1>${x.heroTitle}</h1>
+        <h2>${x.heroTitle}</h2>
         <p class="intro-lede">${x.heroLede}</p>
       </div>
     </header>
