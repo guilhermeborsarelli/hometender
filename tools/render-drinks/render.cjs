@@ -6,15 +6,20 @@ const ROOT = path.resolve(__dirname, '../..');
 const OUT = path.join(ROOT, 'app/img/drinks');
 const TYPES = {'.js': 'text/javascript', '.html': 'text/html', '.json': 'application/json'};
 (async () => {
+  const {DRINKS} = await import(path.join(ROOT, 'app/data.js'));
+  const args = process.argv.slice(2);
+  const only = args.filter(a => !a.startsWith('--'));
+  const photosFile = path.join(OUT, 'photos.json');
+  const photos = new Set(fs.existsSync(photosFile) ? JSON.parse(fs.readFileSync(photosFile, 'utf8')) : []);
+  const candidates = only.length ? DRINKS.filter(d => only.includes(d.id)) : DRINKS;
+  const list = candidates.filter(d => args.includes('--force') || !photos.has(d.id));
+  if (!list.length) { console.log('Imagens existentes preservadas. Use --force para substituir por renders.'); return; }
   const server = http.createServer((req, res) => {
     const file = path.join(ROOT, decodeURIComponent(req.url.split('?')[0]));
     if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end(); }
     res.writeHead(200, {'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream'}); fs.createReadStream(file).pipe(res);
   }).listen(0);
   const port = server.address().port;
-  const {DRINKS} = await import(path.join(ROOT, 'app/data.js'));
-  const only = process.argv.slice(2);
-  const list = only.length ? DRINKS.filter(d => only.includes(d.id)) : DRINKS;
   fs.mkdirSync(OUT, {recursive: true});
   const exe = process.env.CHROMIUM_PATH || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
   const browser = await chromium.launch({executablePath: exe, args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']});

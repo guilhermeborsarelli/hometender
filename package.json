@@ -9,6 +9,7 @@
     "build": "node tools/build.mjs",
     "preview": "node tools/serve.mjs dist 4173",
     "test": "node tests/drinks.test.js",
+    "test:ui": "node --test tests/user-menu.test.js",
     "render:drinks": "node tools/render-drinks/render.cjs",
     "photos:import": "node tools/generate-photos/import.mjs"
   },

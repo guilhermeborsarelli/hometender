@@ -1,0 +1,717 @@
+{
+  "alexander": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "americano": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "angel-face": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "aviation": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "between-the-sheets": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "boulevardier": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "brandy-crusta": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "casino": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "clover-club": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "daiquiri": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gin-fizz": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "hanky-panky": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "john-collins": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "last-word": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "manhattan": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "martinez": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "mary-pickford": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "monkey-gland": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "old-fashioned": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "paradise": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "planters-punch": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "porto-flip": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "ramos-fizz": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "rusty-nail": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "sazerac": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "sidecar": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "stinger": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "tuxedo": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "vieux-carre": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "whiskey-sour": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "white-lady": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "bellini": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "black-russian": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "bloody-mary": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "caipirinha": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "champagne-cocktail": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "cosmopolitan": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "cuba-libre": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "french-75": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "french-connection": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "golden-dream": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "grasshopper": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "hemingway-special": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "horses-neck": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "irish-coffee": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "kir": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "long-island": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "mai-tai": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "margarita": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "mimosa": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "mint-julep": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "moscow-mule": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "pina-colada": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "pisco-sour": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "sea-breeze": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "sex-on-the-beach": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "singapore-sling": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "tequila-sunrise": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "vesper": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "zombie": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "bees-knees": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "bramble": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "canchanchara": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "dark-n-stormy": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "espresso-martini": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "fernandito": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "french-martini": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "lemon-drop": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "naked-and-famous": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "new-york-sour": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "old-cuban": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "paloma": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "paper-plane": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "penicillin": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "russian-spring-punch": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "southside": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "spritz": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "tommys-margarita": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "yellow-bird": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "remember-the-maine": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "cardinale": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "garibaldi": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "rabo-de-galo": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "chartreuse-swizzle": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "dons-special-daiquiri": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "grand-margarita": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "iba-tiki": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "illegal": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "jungle-bird": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "missionarys-downfall": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "pisco-punch": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "porn-star-martini": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "sherry-cobbler": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "spicy-fifty": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "suffering-bastard": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "three-dots-and-a-dash": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "tipperary": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "trinidad-sour": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "ve-n-to": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gimlet": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gin-rickey": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gin-tonica": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gin-sour": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "vodka-sour": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "amaretto-sour": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "caipiroska": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "caipirissima": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "ti-punch": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "rob-roy": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "vodka-martini": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gin-and-it": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "old-pal": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "milano-torino": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "negroni-sbagliato": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "bicicletta": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "kir-royal": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "rum-old-fashioned": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "brandy-old-fashioned": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "oaxaca-old-fashioned": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gold-rush": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "brown-derby": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "whiskey-smash": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gin-basil-smash": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "kentucky-mule": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "gin-gin-mule": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "el-diablo": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "batanga": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "screwdriver": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "greyhound": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "cape-codder": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "whisky-highball": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "white-russian": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "mudslide": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "carajillo": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "godfather": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "godmother": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "corpse-reviver-2": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "jack-rose": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "ward-eight": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "bronx": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "hot-toddy": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "silver-fizz": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  },
+  "sbagliato-americano": {
+    "type": "ai-generated",
+    "style": "photorealistic-3d",
+    "created": "2026-11-06"
+  }
+}

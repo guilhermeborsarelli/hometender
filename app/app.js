@@ -38,7 +38,7 @@ const saveBar = () => store.set(barKey(), [...state.bar]);
 // Favoritos e "Já fiz", por usuário
 const listKey = kind => `hometender.${kind}.${state.user?.email || 'convidado'}`;
 function loadLists() { for (const k of ['fav', 'done']) state[k] = new Set(store.get(listKey(k), []).filter(id => DRINK_BY_ID[id])); }
-const saveList = k => store.set(listKey(k), [...state[k]]);
+const saveList = k => { store.set(listKey(k), [...state[k]]); updateUserMenu(); };
 function toast(text) {
   let el = document.getElementById('toast');
   if (!el) { el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; el.setAttribute('role', 'status'); document.body.append(el); }
@@ -47,6 +47,7 @@ function toast(text) {
 }
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.8-7.5 10.2-7.5 10.2z"/></svg>';
 const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>';
+const CART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l3 12h11l2-8H6M10 20h.01M18 20h.01"/></svg>';
 
 // ── Textos traduzidos ──
 const dName = d => nameFor(d, getLang());
@@ -66,6 +67,7 @@ function applyStaticTexts() {
     box.innerHTML = LANGS.map(l => `<button type="button" data-lang="${l}" aria-pressed="${l === getLang()}">${l.toUpperCase()}</button>`).join('');
   });
   document.getElementById('auth-submit').textContent = authMode === 'register' ? t('registerSubmit') : t('login');
+  updateUserMenu();
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-lang]'); if (!b) return;
@@ -395,6 +397,48 @@ function myDrinksHTML() {
     ${ids.length ? `<div class="grid small">${ids.map(id => card(DRINK_BY_ID[id], {sub: ''})).join('')}</div>` : `<p class="my-empty">${esc(t(state.myTab === 'fav' ? 'emptyFav' : 'emptyDone'))}</p>`}`;
 }
 
+// ── Coleções pessoais e carrinho ──
+function renderSavedDrinks(kind) {
+  const drinks = [...state[kind]].map(id => DRINK_BY_ID[id]).filter(Boolean);
+  const favorite = kind === 'fav';
+  view.innerHTML = pageHead(t('myDrinks'), t(favorite ? 'favorites' : 'madeDrinks'), t(favorite ? 'favoritesLede' : 'madeDrinksLede'))
+    + (drinks.length ? `<div class="grid">${drinks.map(d => card(d)).join('')}</div>`
+      : `<section class="collection-empty">${favorite ? HEART : CHECK}<p>${esc(t(favorite ? 'emptyFav' : 'emptyDone'))}</p><a class="btn" href="#/classicos">${esc(t('exploreDrinks'))}</a></section>`);
+}
+
+function renderCart() {
+  view.innerHTML = `${pageHead(t('userMenu'), t('cart'), t('cartLede'))}
+    <section class="cart-placeholder">${CART}<h2>${esc(t('comingSoon'))}</h2><p>${esc(t('cartMessage'))}</p><a class="btn" href="#/classicos">${esc(t('exploreDrinks'))}</a></section>`;
+}
+
+// Menu expansível com links nativos: teclado, toque e mouse.
+const userAccount = document.getElementById('user-account');
+const userToggle = document.getElementById('user-menu-toggle');
+const userMenu = document.getElementById('user-menu');
+function setUserMenu(open, restoreFocus = false) {
+  userToggle.setAttribute('aria-expanded', String(open));
+  userMenu.hidden = !open;
+  if (restoreFocus) userToggle.focus();
+}
+function updateUserMenu() {
+  const label = document.getElementById('user-name');
+  const name = state.user?.guest ? store.get(GUEST_KEY, null)?.name || t('guest') : state.user?.name;
+  label.textContent = name?.trim().split(/\s+/)[0] || '';
+  label.title = name || '';
+  document.getElementById('user-menu-toggle').setAttribute('aria-label', `${t('userMenu')}${name ? `: ${name}` : ''}`);
+  document.getElementById('user-menu').setAttribute('aria-label', t('userMenu'));
+  document.querySelectorAll('[data-user-count]').forEach(el => { el.textContent = state[el.dataset.userCount].size; });
+}
+userToggle.addEventListener('click', () => setUserMenu(userMenu.hidden));
+document.addEventListener('pointerdown', e => { if (!userAccount.contains(e.target)) setUserMenu(false); });
+userAccount.addEventListener('focusout', e => { if (!userAccount.contains(e.relatedTarget)) setUserMenu(false); });
+userAccount.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !userMenu.hidden) { e.preventDefault(); setUserMenu(false, true); }
+});
+userMenu.addEventListener('click', e => {
+  if (e.target.closest('a')) setUserMenu(false, true);
+});
+
 // ── Copos e utensílios ──
 function renderGlossary() {
   const usage = id => DRINKS.filter(d => d.glass === id);
@@ -458,6 +502,7 @@ document.getElementById('logout').addEventListener('click', () => {
 });
 
 function showCover() {
+  setUserMenu(false);
   shell.hidden = true; cover.hidden = false;
   setAuthMode(auth.hasAccounts() ? 'login' : 'register');
   document.title = 'Home Tender';
@@ -465,8 +510,8 @@ function showCover() {
 
 function enterApp() {
   cover.hidden = true; shell.hidden = false;
-  document.getElementById('user-name').textContent = state.user.name.split(' ')[0];
   loadBar(); loadLists(); rendered = null;
+  updateUserMenu();
   if (!location.hash || location.hash === '#/') location.hash = '#/inicio';
   route(); window.scrollTo({top: 0});
 }
@@ -505,12 +550,14 @@ if ('serviceWorker' in navigator && document.querySelector('script[type="importm
 }
 
 // ── Rotas ──
-const TABS = {inicio: renderIntro, classicos: () => renderMenu('classicos'), variacoes: () => renderMenu('variacoes'), bar: renderBar, utensilios: renderGlossary};
+const TABS = {inicio: renderIntro, classicos: () => renderMenu('classicos'), variacoes: () => renderMenu('variacoes'), bar: renderBar, utensilios: renderGlossary,
+  favoritos: () => renderSavedDrinks('fav'), feitos: () => renderSavedDrinks('done'), carrinho: renderCart};
 const ALIASES = {cardapio: 'classicos', adaptacoes: 'variacoes'};
-const TAB_TITLE = {inicio: 'tabHome', classicos: 'tabClassics', variacoes: 'tabRiffs', bar: 'tabBar', utensilios: 'tabTools'};
+const TAB_TITLE = {inicio: 'tabHome', classicos: 'tabClassics', variacoes: 'tabRiffs', bar: 'tabBar', utensilios: 'tabTools', favoritos: 'favorites', feitos: 'madeDrinks', carrinho: 'cart'};
 let rendered = null;
 const scrollMemo = {};
 function route() {
+  setUserMenu(false);
   if (!state.user) { showCover(); return; }
   let [, tab = 'inicio', id] = location.hash.replace(/^#/, '').split('/');
   tab = ALIASES[tab] || tab;
@@ -530,6 +577,7 @@ function route() {
 }
 function markTab(tab) {
   document.querySelectorAll('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
+  userMenu.querySelectorAll('a').forEach(a => { a.getAttribute('href') === `#/${tab}` ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
 }
 window.addEventListener('hashchange', route);
 applyStaticTexts();

@@ -18,6 +18,9 @@ export const getLang = () => current;
 // ───────────── Interface ─────────────
 const UI = {
   pt: {
+    userMenu: 'Sua conta', madeDrinks: 'Drinks feitos', cart: 'Carrinho de compras', comingSoon: 'Em breve',
+    favoritesLede: 'Suas receitas favoritas, guardadas para a próxima rodada.', madeDrinksLede: 'Os drinks que você já preparou. Cada receita é uma nova conquista.',
+    cartLede: 'Seu próximo brinde começa aqui.', cartMessage: 'Em breve, você poderá organizar suas compras por aqui.', exploreDrinks: 'Explorar os drinks',
     tagline: 'O bartender da sua casa', eyebrow: 'Coquetelaria clássica',
     coverLede: 'Os grandes coquetéis do mundo, como os bartenders aprendem a fazer: as receitas oficiais da International Bartenders Association, a história de cada copo e o passo a passo para servir em casa como num bar de hotel.',
     feat1: 'O cânone oficial', feat1d: 'Os clássicos da IBA com medidas exatas, copo e utensílios.',
@@ -66,6 +69,9 @@ const UI = {
     impro: {coqueteleira: 'Pote de vidro com tampa bem fechada.', dosador: 'Colher de sopa (15 ml) e de chá (5 ml).', socador: 'O cabo de uma colher de pau.', peneira: 'Uma peneirinha de chá.', hawthorne: 'A tampa do pote entreaberta segura o gelo.', julep_strainer: 'Uma colher grande segurando o gelo.', misturador: 'Qualquer copo alto e firme.', bailarina: 'Uma colher comprida ou um hashi.', espremedor: 'Esprema com a mão, sobre uma peneira.', descascador: 'Uma faca pequena, tirando só a parte colorida da casca.', pinca: 'Os dedos limpos, com delicadeza.', chaleira: 'Uma panela no fogo.'}
   },
   en: {
+    userMenu: 'Your account', madeDrinks: 'Drinks made', cart: 'Shopping cart', comingSoon: 'Coming soon',
+    favoritesLede: 'Your favorite recipes, saved for the next round.', madeDrinksLede: 'The drinks you have already made. Every recipe is a new achievement.',
+    cartLede: 'Your next toast starts here.', cartMessage: 'Soon, you will be able to organize your shopping here.', exploreDrinks: 'Explore the drinks',
     tagline: 'Your bartender at home', eyebrow: 'Classic mixology',
     coverLede: 'The world’s great cocktails, made the way bartenders learn them: the official recipes of the International Bartenders Association, the story behind every glass and a step-by-step guide to serving them at home like a hotel bar.',
     feat1: 'The official canon', feat1d: 'IBA classics with exact measures, glassware and tools.',
@@ -114,6 +120,9 @@ const UI = {
     impro: {coqueteleira: 'A glass jar with a tight lid.', dosador: 'A tablespoon (15 ml) and teaspoon (5 ml).', socador: 'The handle of a wooden spoon.', peneira: 'A small tea strainer.', hawthorne: 'Hold the ice back with the jar lid slightly open.', julep_strainer: 'A large spoon holding back the ice.', misturador: 'Any tall, sturdy glass.', bailarina: 'A long spoon or a chopstick.', espremedor: 'Squeeze by hand over a sieve.', descascador: 'A small knife, taking only the coloured part of the peel.', pinca: 'Clean fingers and a gentle touch.', chaleira: 'A pan on the stove.'}
   },
   es: {
+    userMenu: 'Tu cuenta', madeDrinks: 'Cócteles preparados', cart: 'Carrito de compras', comingSoon: 'Próximamente',
+    favoritesLede: 'Tus recetas favoritas, guardadas para la próxima ronda.', madeDrinksLede: 'Los cócteles que ya has preparado. Cada receta es un nuevo logro.',
+    cartLede: 'Tu próximo brindis empieza aquí.', cartMessage: 'Pronto podrás organizar tus compras aquí.', exploreDrinks: 'Explorar los cócteles',
     tagline: 'El bartender de tu casa', eyebrow: 'Coctelería clásica',
     coverLede: 'Los grandes cócteles del mundo, como los aprenden los bartenders: las recetas oficiales de la International Bartenders Association, la historia de cada cóctel y el paso a paso para servirlos en casa como en el bar de un hotel.',
     feat1: 'El canon oficial', feat1d: 'Los clásicos de la IBA con medidas exactas, cristalería y utensilios.',
