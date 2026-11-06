@@ -24,7 +24,7 @@ const store = {
 
 const auth = createAuth();
 const IBA_CATS = ['unforgettable', 'contemporary', 'newera'];
-const state = {user: null, bar: new Set(), bars: [], activeBarId: null, cart: new Set(), cat: 'all', base: 'all', q: '', barQ: '', lastList: 'classicos', openGroups: new Set(['Destilados']), fav: new Set(), done: new Set(), servings: 1, myTab: 'fav'};
+const state = {user: null, bar: new Set(), bars: [], activeBarId: null, cart: new Set(), cat: 'all', base: 'all', q: '', barQ: '', lastList: 'classicos', openGroups: new Set(['Destilados']), fav: new Set(), done: new Set(), servings: 1, myTab: 'fav', myDrinksOpen: false};
 const wide = () => globalThis.matchMedia?.('(min-width: 960px)').matches;
 // Altura real da barra superior, para os filtros fixos logo abaixo dela no celular.
 const topbarEl = document.querySelector('.topbar');
@@ -295,12 +295,6 @@ function homeMeasure(ml) {
 }
 
 // ── Meu Bar ──
-const PRESETS = {
-  presetHome: ['cachaca', 'vodka', 'limao', 'acucar', 'laranja', 'soda', 'cola', 'hortela'],
-  presetAperitivo: ['gin', 'campari', 'vermute_tinto', 'vermute_seco', 'aperol', 'espumante', 'soda', 'laranja', 'siciliano'],
-  presetWhiskey: ['bourbon', 'scotch', 'vermute_tinto', 'angostura', 'acucar', 'siciliano', 'mel', 'cereja', 'soda']
-};
-
 function barProfilesHTML() {
   return `<section class="bar-profiles" aria-labelledby="bar-profiles-h">
     <div><p class="kicker">${esc(t('yourSpaces'))}</p><h2 id="bar-profiles-h">${esc(t('chooseBar'))}</h2><p class="bar-profile-note">${esc(t('barsSavedNote'))}</p></div>
@@ -353,12 +347,17 @@ function renderBar() {
   }).join('');
   view.innerHTML = `${pageHead(t('barKicker'), t('barTitle'), t('barLede'))}
     ${barProfilesHTML()}
-    <section class="my-drinks" id="my-drinks">${myDrinksHTML()}</section>
+    <details class="my-drinks" id="my-drinks" ${state.myDrinksOpen ? 'open' : ''}>
+      <summary>${esc(t('myDrinks'))}</summary>
+      <div class="my-drinks-content" id="my-drinks-content">${myDrinksHTML()}</div>
+    </details>
     <div class="bar-layout">
       <section class="panel bar-picker" aria-labelledby="bar-h">
         <div class="panel-head"><h2 id="bar-h">${esc(t('barShelf'))}</h2><span id="bar-count">${esc(t('selected', state.bar.size))}</span></div>
-        <div class="presets">${Object.keys(PRESETS).map(p => `<button type="button" class="chip ghost" data-preset="${p}">+ ${esc(t(p))}</button>`).join('')}<button type="button" class="chip ghost danger" id="clear" ${state.bar.size ? '' : 'disabled'}>${esc(t('clear'))}</button></div>
-        <label class="field"><span class="sr">${esc(t('barFilter'))}</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg><input id="barq" type="search" placeholder="${esc(t('barFilter'))}" value="${esc(state.barQ)}" autocomplete="off"></label>
+        <div class="shelf-controls">
+          <label class="field"><span class="sr">${esc(t('barFilter'))}</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg><input id="barq" type="search" placeholder="${esc(t('barFilter'))}" value="${esc(state.barQ)}" autocomplete="off"></label>
+          <button type="button" class="chip ghost danger" id="clear" ${state.bar.size ? '' : 'disabled'}>${esc(t('clear'))}</button>
+        </div>
         <div id="groups">${groups || `<p class="empty">${esc(t('noResults'))}</p>`}</div>
       </section>
       <section class="bar-results" id="results" aria-live="polite"></section>
@@ -381,11 +380,13 @@ function renderBar() {
     view.querySelector('#bar-count').textContent = t('selected', state.bar.size);
   });
   view.querySelectorAll('.ing-group').forEach(g => g.addEventListener('toggle', () => { g.open ? state.openGroups.add(g.dataset.group) : state.openGroups.delete(g.dataset.group); }));
-  view.querySelector('#my-drinks').addEventListener('click', e => {
+  const myDrinks = view.querySelector('#my-drinks');
+  myDrinks.addEventListener('toggle', () => { state.myDrinksOpen = myDrinks.open; });
+  myDrinks.addEventListener('click', e => {
     const b = e.target.closest('[data-my]'); if (!b) return;
-    state.myTab = b.dataset.my; view.querySelector('#my-drinks').innerHTML = myDrinksHTML();
+    state.myTab = b.dataset.my; view.querySelector('#my-drinks-content').innerHTML = myDrinksHTML();
+    view.querySelector(`[data-my="${state.myTab}"]`).focus();
   });
-  view.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => { PRESETS[b.dataset.preset].forEach(id => state.bar.add(id)); saveBar(); renderBar(); }));
   view.querySelector('#clear').addEventListener('click', () => { state.bar.clear(); saveBar(); renderBar(); });
   view.querySelector('#fab').addEventListener('click', e => { e.preventDefault(); view.querySelector('#results').scrollIntoView({behavior: 'smooth'}); });
   view.querySelector('#bar-select').addEventListener('change', event => {
@@ -458,7 +459,7 @@ function renderResults() {
 function myDrinksHTML() {
   const ids = [...state[state.myTab]].filter(id => DRINK_BY_ID[id]);
   const tabs = [['fav', t('favorites'), state.fav.size], ['done', t('madeIt'), state.done.size]];
-  return `<div class="my-head"><h2>${esc(t('myDrinks'))}</h2><div class="seg" role="tablist">${tabs.map(([k, label, n]) => `<button type="button" role="tab" data-my="${k}" aria-selected="${state.myTab === k}">${esc(label)} <span>${n}</span></button>`).join('')}</div></div>
+  return `<div class="my-head"><div class="seg" role="tablist" aria-label="${esc(t('myDrinks'))}">${tabs.map(([k, label, n]) => `<button type="button" role="tab" data-my="${k}" aria-selected="${state.myTab === k}">${esc(label)} <span>${n}</span></button>`).join('')}</div></div>
     ${ids.length ? `<div class="grid small">${ids.map(id => card(DRINK_BY_ID[id], {sub: ''})).join('')}</div>` : `<p class="my-empty">${esc(t(state.myTab === 'fav' ? 'emptyFav' : 'emptyDone'))}</p>`}`;
 }
 
@@ -632,7 +633,7 @@ if ('serviceWorker' in navigator && document.querySelector('script[type="importm
 }
 
 // ── Rotas ──
-const TABS = {inicio: renderIntro, classicos: () => renderMenu('classicos'), variacoes: () => renderMenu('variacoes'), bar: renderBar, utensilios: renderGlossary,
+const TABS = {inicio: renderIntro, classicos: () => renderMenu('classicos'), variacoes: () => renderMenu('variacoes'), bar: () => { state.myDrinksOpen = false; renderBar(); }, utensilios: renderGlossary,
   favoritos: () => renderSavedDrinks('fav'), feitos: () => renderSavedDrinks('done'), carrinho: renderCart};
 const ALIASES = {cardapio: 'classicos', adaptacoes: 'variacoes'};
 const TAB_TITLE = {inicio: 'tabHome', classicos: 'tabClassics', variacoes: 'tabRiffs', bar: 'tabBar', utensilios: 'tabTools', favoritos: 'favorites', feitos: 'madeDrinks', carrinho: 'cart'};
