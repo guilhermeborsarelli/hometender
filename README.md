@@ -100,13 +100,28 @@ Histórico: o projeto nasceu dentro do repositório `fintrack` (pasta `public/dr
   O service worker só é registrado na versão publicada (com import map), nunca no servidor de desenvolvimento.
 - Na tela Início aparece o convite para instalar (botão no Android/Chrome; instruções no iPhone). Fechar o convite é lembrado.
 
-## Favoritos, "Já fiz", quantidade e próxima compra
+## Favoritos, "Já fiz" e quantidade
 
 - Favoritos e "Já fiz" ficam por usuário em `hometender.fav.<email>` e `hometender.done.<email>`; aparecem em "Meus drinks", no topo do Meu Bar.
   Concluir todos os passos da receita marca "Já fiz" sozinho.
-- O nome do usuário na barra superior abre um submenu com contadores e páginas próprias para Favoritos e Drinks feitos, além do Carrinho de compras ("Em breve", sem pedidos ou pagamentos). O menu funciona no celular, fecha com Escape ou ao clicar fora e mantém a opção Sair.
+- O nome do usuário na barra superior abre um submenu com contadores e páginas próprias para Favoritos, Drinks feitos e Carrinho de compras. O menu funciona no celular, fecha com Escape ou ao clicar fora e mantém a opção Sair.
 - A folha da receita tem o seletor 1 / 2 / 4 / 6 drinks: multiplica as medidas em ml e a medida caseira; doses em texto ganham "× n".
-- "Próxima compra" (Meu Bar): os ingredientes que, comprados, completam mais receitas com o que a pessoa já tem.
+
+## Bares por local e carrinho
+
+Na aba Meu Bar, cada pessoa pode criar espaços como Apartamento e Casa de campo, alternar entre eles, renomeá-los e excluir um bar com confirmação. Cada espaço tem sua lista de ingredientes; as sugestões e as indicações nas receitas usam apenas o bar selecionado. É mantido pelo menos um bar por perfil.
+
+Os bares, o bar selecionado e um carrinho único da conta são salvos em `hometender.profile.<email>` no `localStorage`. A lista anterior em `hometender.bar.<email>` é recuperada no primeiro bar, sem apagar o registro antigo. O legado sem dono `barnoir.bar` só é recuperado para o visitante. O login continua local: esses dados persistem neste aparelho, sem sincronização entre dispositivos.
+
+Em Quase lá, cada ingrediente faltante tem um botão Adicionar ao carrinho. O mesmo ingrediente entra apenas uma vez, mesmo quando falta em várias receitas ou locais. Adicionar ao carrinho não marca o produto como disponível na prateleira. O carrinho permite remover itens e limpar a lista.
+
+### Links da Amazon Associados
+
+Preencha o objeto `AMAZON_AFFILIATE_LINKS` em `app/affiliate-links.js`, usando o id do ingrediente em `data.js` como chave (por exemplo, `gin` ou `campari`) e o link HTTPS completo do produto gerado pelo seu programa de associados como valor. A tag do link é preservada. São aceitos links da Amazon Brasil, Amazon.com e os atalhos `amzn.to`, `amzn.eu` e `a.co`.
+
+Quando um produto tem link configurado, aparece Ver na Amazon, abrindo a loja em uma nova aba. Sem link, o produto continua salvo no carrinho com indicação de disponibilidade futura. Não há checkout nem pagamento dentro do app. O aviso de afiliado aparece quando há links ativos.
+
+`npm test` inclui os testes de migração, persistência, isolamento entre contas e links. `npm run test:ui` também cobre os bares por local, o carrinho e telas pequenas.
 
 ## Entrada sem cadastro (só durante o desenvolvimento)
 

@@ -53,6 +53,7 @@ async function userLink(page, path) {
   await page.locator('#user-menu-toggle').click();
   await page.locator(`#user-menu a[href="#/${path}"]`).click();
   await page.waitForURL(`**/#/${path}`);
+  await page.locator(`#user-menu a[href="#/${path}"][aria-current="page"]`).waitFor({state: 'attached'});
 }
 async function logout(page) {
   await page.locator('#user-menu-toggle').click();
@@ -125,17 +126,173 @@ test('favoritos e feitos persistem, atualizam contadores e ficam separados por c
   await page.locator('#view .card[href="#/drink/negroni"]').waitFor();
 });
 
-test('carrinho é uma página futura traduzida nos três idiomas', async t => {
+test('carrinho vazio e seus textos são traduzidos nos três idiomas', async t => {
   const page = await openPage(t);
   await guest(page);
   await userLink(page, 'carrinho');
-  for (const [lang, title, soon] of [['pt', 'Carrinho de compras', 'Em breve'], ['en', 'Shopping cart', 'Coming soon'], ['es', 'Carrito de compras', 'Próximamente']]) {
+  for (const [lang, title, empty] of [['pt', 'Carrinho de compras', 'Seu carrinho está vazio'], ['en', 'Shopping cart', 'Your cart is empty'], ['es', 'Carrito de compras', 'Tu carrito está vacío']]) {
     await page.locator(`#shell [data-lang="${lang}"]`).click();
     assert.equal(await page.locator('#view h1').textContent(), title);
-    assert.equal(await page.locator('.cart-placeholder h2').textContent(), soon);
+    assert.equal(await page.locator('.cart-empty h2').textContent(), empty);
     assert.equal(await page.locator('#user-menu a[href="#/carrinho"] [data-i18n="cart"]').textContent(), title);
   }
-  assert.equal(await page.locator('.cart-placeholder button, .cart-placeholder input, .cart-placeholder form').count(), 0);
+  assert.equal(await page.locator('.cart-empty input, .cart-empty form').count(), 0);
+  assert.equal(await page.locator('[data-user-count="cart"]').textContent(), '0');
+});
+
+async function ingredient(page, id) {
+  const button = page.locator(`[data-ing="${id}"]`);
+  const group = page.locator('.ing-group').filter({has: button});
+  if (!await group.evaluate(el => el.open)) await group.locator('summary').click();
+  await button.click();
+}
+async function barName(page, action, name) {
+  await page.locator(`#bar-${action}`).click();
+  await page.locator('dialog input[name="barName"]').fill(name);
+  await page.locator('dialog button[type="submit"]').click();
+  await page.locator('dialog').waitFor({state: 'hidden'});
+}
+async function openBar(page) {
+  await page.locator('[data-tab="bar"]').click();
+  await page.locator('#bar-select').waitFor();
+}
+
+test('migra o bar antigo, separa os ingredientes por espaço e permite renomear e excluir com confirmação', async t => {
+  const page = await openPage(t);
+  await page.evaluate(() => localStorage.setItem('hometender.bar.visitante', JSON.stringify(['gin', 'vermute_tinto'])));
+  await guest(page);
+  await openBar(page);
+  assert.equal(await page.locator('#bar-select option').count(), 1);
+  assert.equal(await page.locator('[data-ing="gin"]').getAttribute('aria-pressed'), 'true');
+  await barName(page, 'rename', 'Apartamento');
+  const apartment = await page.locator('#bar-select').inputValue();
+  await barName(page, 'create', 'Casa de campo');
+  const country = await page.locator('#bar-select').inputValue();
+  assert.notEqual(country, apartment);
+  assert.equal(await page.locator('[data-ing="gin"]').getAttribute('aria-pressed'), 'false');
+  for (const id of ['cachaca', 'limao', 'acucar']) await ingredient(page, id);
+  await page.locator('#results a.result[href="#/drink/caipirinha"]').waitFor();
+  assert.equal(await page.locator('#results a.result[href="#/drink/negroni"]').count(), 0);
+  await page.reload({waitUntil: 'domcontentloaded'});
+  assert.equal(await page.locator('#bar-select').inputValue(), country);
+  assert.equal(await page.locator('[data-ing="cachaca"]').getAttribute('aria-pressed'), 'true');
+  await page.locator('#bar-select').selectOption(apartment);
+  assert.equal(await page.locator('[data-ing="gin"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.locator('[data-ing="cachaca"]').getAttribute('aria-pressed'), 'false');
+  await page.locator('#bar-create').click();
+  await page.locator('dialog input').fill('apartamento');
+  await page.locator('dialog button[type="submit"]').click();
+  await page.locator('#bar-dialog-error').waitFor({state: 'visible'});
+  assert.match(await page.locator('#bar-dialog-error').textContent(), /já tem/);
+  await page.keyboard.press('Escape');
+  await page.locator('dialog').waitFor({state: 'hidden'});
+  assert.equal(await page.locator('#bar-select option').count(), 2);
+  await page.locator('#bar-select').selectOption(country);
+  await page.locator('#bar-delete').click();
+  await page.locator('[data-dialog-cancel]').click();
+  assert.equal(await page.locator('#bar-select option').count(), 2);
+  await page.locator('#bar-delete').click();
+  await page.locator('dialog button[type="submit"]').click();
+  await page.locator('dialog').waitFor({state: 'hidden'});
+  assert.equal(await page.locator('#bar-select').inputValue(), apartment);
+  assert.equal(await page.locator('#bar-select option').count(), 1);
+  assert.ok(await page.locator('#bar-delete').isDisabled());
+  assert.equal(await page.locator('[data-ing="gin"]').getAttribute('aria-pressed'), 'true');
+});
+
+test('Quase lá adiciona cada item ao carrinho sem duplicar, sem alterar a prateleira e sem abrir a receita', async t => {
+  const page = await openPage(t);
+  await guest(page);
+  await openBar(page);
+  for (const id of ['gin', 'vermute_tinto']) await ingredient(page, id);
+  assert.equal(await page.locator('.next-buy').count(), 0);
+  const missing = page.locator('[data-near-drink="negroni"] [data-add-cart="campari"]');
+  await missing.click();
+  assert.ok(page.url().endsWith('#/bar'));
+  assert.ok(await missing.isDisabled());
+  assert.equal(await page.locator('[data-user-count="cart"]').textContent(), '1');
+  assert.equal(await page.locator('[data-ing="campari"]').getAttribute('aria-pressed'), 'false');
+  assert.ok(await page.locator('[data-add-cart="campari"]').evaluateAll(buttons => buttons.every(button => button.disabled)));
+  await barName(page, 'create', 'Outro endereço');
+  assert.equal(await page.locator('[data-user-count="cart"]').textContent(), '1');
+  await userLink(page, 'carrinho');
+  assert.equal(await page.locator('[data-cart-product]').count(), 1);
+  assert.match(await page.locator('[data-cart-product="campari"]').textContent(), /Campari/);
+  assert.equal(await page.locator('a.amazon-link').count(), 0);
+  await page.reload({waitUntil: 'domcontentloaded'});
+  await page.locator('[data-cart-product="campari"]').waitFor();
+  await page.locator('[data-remove-cart="campari"]').click();
+  await page.locator('.cart-empty').waitFor();
+  assert.equal(await page.locator('[data-user-count="cart"]').textContent(), '0');
+});
+
+test('bares e carrinho reaparecem ao entrar na conta e não vazam para outra pessoa', async t => {
+  const page = await openPage(t);
+  await register(page, 'Ana Brito', 'ana@example.test');
+  await openBar(page);
+  for (const id of ['gin', 'vermute_tinto']) await ingredient(page, id);
+  await page.locator('[data-near-drink="negroni"] [data-add-cart="campari"]').click();
+  await barName(page, 'create', 'Casa de campo');
+  await ingredient(page, 'cachaca');
+  await logout(page);
+  await register(page, 'Bia Silva', 'bia@example.test');
+  await openBar(page);
+  assert.equal(await page.locator('#bar-select option').count(), 1);
+  assert.equal(await page.locator('[data-ing="gin"]').getAttribute('aria-pressed'), 'false');
+  assert.equal(await page.locator('[data-user-count="cart"]').textContent(), '0');
+  await logout(page);
+  await page.locator('[data-mode="login"]').click();
+  await page.locator('[name="email"]').fill('ana@example.test');
+  await page.locator('[name="password"]').fill('senha-de-teste');
+  await page.locator('#auth-submit').click();
+  await page.locator('#shell').waitFor({state: 'visible'});
+  await openBar(page);
+  assert.equal(await page.locator('#bar-select option').count(), 2);
+  assert.equal(await page.locator('#bar-select option:checked').textContent(), 'Casa de campo');
+  assert.equal(await page.locator('[data-ing="cachaca"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.locator('[data-user-count="cart"]').textContent(), '1');
+});
+
+test('links de associado aparecem somente quando configurados e preservam a tag da Amazon', async t => {
+  const page = await openPage(t);
+  const url = 'https://www.amazon.com.br/dp/TEST123?tag=teste-20&linkCode=ll1';
+  await page.route('**/affiliate-links.js*', async route => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace('export const AMAZON_AFFILIATE_LINKS = {};', `export const AMAZON_AFFILIATE_LINKS = ${JSON.stringify({gin: url})};`);
+    await route.fulfill({response, body});
+  });
+  await page.evaluate(() => localStorage.setItem('hometender.profile.visitante', JSON.stringify({version: 1, activeBarId: 'bar-default', bars: [{id: 'bar-default', name: 'Apartamento', ingredients: []}], cart: ['gin', 'campari']})));
+  await page.reload({waitUntil: 'domcontentloaded'});
+  await guest(page);
+  await userLink(page, 'carrinho');
+  const link = page.locator('[data-cart-product="gin"] .amazon-link');
+  assert.equal(await link.getAttribute('href'), url);
+  assert.equal(await link.getAttribute('target'), '_blank');
+  assert.match(await link.getAttribute('rel'), /sponsored/);
+  assert.equal(await page.locator('[data-cart-product="campari"] .amazon-link').count(), 0);
+  await page.locator('.cart-disclosure').waitFor();
+  await page.locator('#cart-clear').click();
+  await page.locator('.cart-empty').waitFor();
+  assert.equal(await page.locator('[data-user-count="cart"]').textContent(), '0');
+});
+
+test('Quase lá, criação de bares e carrinho cabem no celular', async t => {
+  for (const width of [320, 390]) await t.test(`${width}px`, async t => {
+    const page = await openPage(t, {width, height: 844});
+    await guest(page);
+    await openBar(page);
+    for (const id of ['gin', 'vermute_tinto']) await ingredient(page, id);
+    const button = page.locator('[data-near-drink="negroni"] [data-add-cart="campari"]');
+    await button.click();
+    const box = await button.boundingBox();
+    assert.ok(box.x >= 0 && box.x + box.width <= width);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await barName(page, 'create', 'Casa de campo');
+    assert.equal(await page.locator('#bar-select option:checked').textContent(), 'Casa de campo');
+    await userLink(page, 'carrinho');
+    await page.locator('[data-cart-product="campari"]').waitFor();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  });
 });
 
 test('nome e submenu continuam acessíveis em telas pequenas e intermediárias', async t => {
